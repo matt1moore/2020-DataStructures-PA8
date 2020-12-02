@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 #include "array_list.h"
 #include "avl_collection.h"
+#include <math.h>
 
 
 using namespace std;
@@ -343,7 +344,126 @@ TEST(BasicListTest, RemoveRebalanceCheck) {
 // class. Be sure for each test to provide comments describing the
 // detailed purpose of each the test.
 
+// ~~~~~~~~~~~~~ ADDITIONAL TEST 1: LEFT-LEFT Rebalance ~~~~~~~~~~~~~
+TEST(AVLCollectionTest, RebalanceLeftLeftExtreme) {
+  // Adds elements in order to get the maximum number of rebalances
+  AVLCollection<char,int> c1;
+  char c = 'a';
+  for (int i = 0; i < 26; ++i) {
+    c1.add(c,i);
+	++c;
+  }
+  // When entire alphabet is added then the height should be the value of log base 2 of n
+  // So, 5 in this case
+  ASSERT_EQ(5, c1.height()); 
+  ASSERT_EQ(26, c1.size()); 
+  
+  // Finally remove all elements in the reverse order confirming no errors
+  for (int i = 0; i < 27; ++i) {
+    c1.remove(c);
+	--c; 
+  }
+  // No elements should be left so all values should be zeroed out
+  ASSERT_EQ(0, c1.height()); 
+  ASSERT_EQ(0, c1.size()); 
+}
 
+// ~~~~~~~~~~~~~ ADDITIONAL TEST 2: RIGHT-RIGHT Rebalance ~~~~~~~~~~~~~
+TEST(AVLCollectionTest, RebalanceRightRightExtreme) {
+  // Adds elements in order to get the maximum number of right right rebalances
+  AVLCollection<char,int> c1;
+  char c = 'z';
+  for (int i = 0; i < 26; ++i) {
+    c1.add(c,i);
+	--c;
+  }
+  // When entire alphabet is added then the height should be the value of log base 2 of n
+  // So, 5 in this case
+  ASSERT_EQ(5, c1.height()); 
+  ASSERT_EQ(26, c1.size()); 
+  
+   // Finally remove all elements in the reverse order confirming no errors
+  for (int i = 0; i < 27; ++i) {
+    c1.remove(c);
+	++c; 
+  }
+  // No elements should be left so all values should be zeroed out
+  ASSERT_EQ(0, c1.height()); 
+  ASSERT_EQ(0, c1.size()); 
+}
+
+// ~~~~~~~~~~~~~ ADDITIONAL TEST 3: RIGHT-LEFT Rebalance ~~~~~~~~~~~~~
+TEST(AVLCollectionTest, RebalanceRightLeftExtreme) {
+  AVLCollection<string,int> c1;
+  c1.add("f",10);
+  ASSERT_EQ(1, c1.size());
+  ASSERT_EQ(1, c1.height()); 
+  c1.add("l",20);
+  ASSERT_EQ(2, c1.size());
+  ASSERT_EQ(2, c1.height()); 
+  c1.add("h",30);
+  // Right-left rebalance should occur, so height is 2
+  ASSERT_EQ(3, c1.size());
+  ASSERT_EQ(2, c1.height()); 
+  
+  c1.add("i",40);
+  ASSERT_EQ(4, c1.size());
+  ASSERT_EQ(3, c1.height()); 
+  c1.add("j",50);
+  // Right-left rebalance should occur, so height is now 3
+  ASSERT_EQ(5, c1.size());
+  ASSERT_EQ(3, c1.height()); 
+  c1.add("k",60);
+  // Right-left rebalance should occur on the root, so height remains as three
+  ASSERT_EQ(6, c1.size());
+  ASSERT_EQ(3, c1.height()); 
+}
+
+// ~~~~~~~~~~~~~ ADDITIONAL TEST 4: LEFT-RIGHT Rebalance ~~~~~~~~~~~~~
+TEST(AVLCollectionTest, RebalanceLeftRightExtreme) {
+  AVLCollection<string,int> c1;
+  c1.add("f",10);
+  ASSERT_EQ(1, c1.size());
+  ASSERT_EQ(1, c1.height()); 
+  c1.add("a",20);
+  ASSERT_EQ(2, c1.size());
+  ASSERT_EQ(2, c1.height()); 
+  c1.add("e",30);
+  // Left-right rebalance should occur, so height is 2
+  ASSERT_EQ(3, c1.size());
+  ASSERT_EQ(2, c1.height()); 
+  
+  c1.add("b",40);
+  ASSERT_EQ(4, c1.size());
+  ASSERT_EQ(3, c1.height()); 
+  c1.add("c",50);
+  // Left-right rebalance should occur, so height is now 3
+  ASSERT_EQ(5, c1.size());
+  ASSERT_EQ(3, c1.height()); 
+  c1.add("d",60);
+  // Left-right rebalance should occur on the root, so height remains as three
+  ASSERT_EQ(6, c1.size());
+  ASSERT_EQ(3, c1.height()); 
+}
+
+// ~~~~~~~~~~~~~ ADDITIONAL TEST 5: Huge Overload ~~~~~~~~~~~~~
+TEST(AVLCollectionTest, HugeOverload) {
+  AVLCollection<int,int> c1;
+  // Test similar to the performance test, using a huge amount of elements and confirming
+  // that each additional element is maintaining the balance
+  for (int i = 0; i < 30000; ++i) {
+	ASSERT_EQ(i, c1.size());
+    c1.add(i,10);
+	if (i > 5) {
+	  // The height should always be equivalent or less than to log base 2 for node counts greater than 5
+	  ASSERT_LE(c1.height(), round(log2(i)) + 1);
+	}
+	if (i % 1000 == 0) {
+	  // Checks every thousand elements
+	  cout << i << endl; 
+	}
+  }
+}
 
 int main(int argc, char** argv)
 {
