@@ -174,8 +174,8 @@ bool ArrayList<T>:: remove(size_t index) {
 	}
 	else {
 		// Valid index number, so remove value
-		for (size_t i = index; i < length; i++) {
-			items[i] = items[i + 1];
+		for (size_t i = index + 1; i < length; i++) {
+			items[i - 1] = items[i];
 		}
 		// Re-evaluate the size of the array
 		length = length - 1;

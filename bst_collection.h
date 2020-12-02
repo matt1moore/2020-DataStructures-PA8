@@ -287,7 +287,7 @@ BSTCollection<K,V>::remove(Node* subtree_root, const K& a_key)
       // Assigning value to subtree_root to get reconnected to end of tree
 	  subtree_root = tmp;
 	}
-	else if (height(subtree_root) == 2 && (subtree_root->right != nullptr || subtree_root->left != nullptr)) {
+	else if (height(subtree_root) == 2 && (subtree_root->right == nullptr || subtree_root->left == nullptr)) {
 	  // CASE 2: Single Child Case
 	  if (subtree_root->right == nullptr) {
 	    // Tells us that only the left subtree exists
@@ -309,6 +309,10 @@ BSTCollection<K,V>::remove(Node* subtree_root, const K& a_key)
 	  // CASE 3: Two Children and no need for in order successor
 	  tmp = subtree_root->right;
 	  subtree_root->right->left = subtree_root->left;
+	  if (subtree_root == root) {
+	    // Case of the root being removed
+		root = subtree_root->right;
+	  }
 	  delete subtree_root;
 	  --node_count;
 	  subtree_root = tmp;
@@ -328,9 +332,7 @@ BSTCollection<K,V>::remove(Node* subtree_root, const K& a_key)
 	  subtree_root->right = remove(subtree_root->right,tmp->key); 
 	}
   }
-
   return subtree_root;
-
 }
 template<typename K, typename V>
 void BSTCollection<K,V>::find(const Node* subtree_root, const K& k1, const K& k2, ArrayList<K>& keys) const

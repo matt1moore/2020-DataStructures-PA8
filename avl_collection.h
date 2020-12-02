@@ -134,7 +134,6 @@ void AVLCollection<K,V>::add(const K& a_key, const V& a_val)
   else {
 	// REGULAR CASE: Nodes being added to a tree with a root
     add(root,a_key,a_val);
-	print_tree("   ",root); 
   }
 }
 template<typename K, typename V>
@@ -303,7 +302,7 @@ AVLCollection<K,V>::remove(Node* subtree_root, const K& a_key)
       // Assigning value to subtree_root to get reconnected to end of tree
 	  subtree_root = tmp;
 	}
-	else if (height(subtree_root) == 2 && (subtree_root->right != nullptr || subtree_root->left != nullptr)) {
+	else if (height(subtree_root) == 2 && (subtree_root->right == nullptr || subtree_root->left == nullptr)) {
 	  // CASE 2: Single Child Case
 	  if (subtree_root->right == nullptr) {
 	    // Tells us that only the left subtree exists
@@ -348,7 +347,10 @@ AVLCollection<K,V>::remove(Node* subtree_root, const K& a_key)
 	  subtree_root->right = remove(subtree_root->right,tmp->key); 
 	}
   }
-
+  if (subtree_root) {
+    // Confirm that all heights are updated back up the path
+    subtree_root->height = height(subtree_root);
+  }
   return rebalance(subtree_root);
 
 }
